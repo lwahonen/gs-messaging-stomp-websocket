@@ -13,14 +13,17 @@ function setConnected(connected) {
 }
 
 function connect() {
+    var name=$("#name").val();
     var socket = new SockJS('/gs-guide-websocket');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/greetings', function (greeting) {
+        var destination ='/topic/greetings';
+        var managed=stompClient.subscribe(destination, function (greeting) {
             showGreeting(JSON.parse(greeting.body).content);
         });
+        console.log("Connection to "+managed+" with destination "+destination);
     });
 }
 
@@ -33,7 +36,8 @@ function disconnect() {
 }
 
 function sendName() {
-    stompClient.send("/app/hello", {}, JSON.stringify({'name': $("#name").val()}));
+    var name=$("#name").val();
+    stompClient.send("/app/broker/"+name, {}, JSON.stringify({'message': $("#message").val()}));
 }
 
 function showGreeting(message) {
