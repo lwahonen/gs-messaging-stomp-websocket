@@ -14,7 +14,7 @@ function setConnected(connected) {
 
 function connect() {
     var name=$("#name").val();
-    var socket = new SockJS('/gs-guide-websocket');
+    var socket = new SockJS('/fallback');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         setConnected(true);
@@ -37,7 +37,7 @@ function disconnect() {
 
 function sendName() {
     var name=$("#name").val();
-    stompClient.send("/app/broker/"+name, {}, JSON.stringify({'message': $("#message").val()}));
+    stompClient.send("/broker/"+name, {}, JSON.stringify({'message': $("#message").val()}));
 }
 
 function showGreeting(message) {

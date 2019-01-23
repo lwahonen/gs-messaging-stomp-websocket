@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 @Controller
 public class GreetingController {
 
-    @MessageMapping("/broker/{name}")
+    @MessageMapping("/{name}")
     @SendTo("/topic/{name}")
     public Greeting greeting(@DestinationVariable String name, HelloMessage message) {
         Logger.getLogger(getClass().getName()).log(Level.INFO, String.format("Writing %s to %s", message.getMessage(), name));
