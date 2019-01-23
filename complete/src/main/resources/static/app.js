@@ -19,7 +19,7 @@ function connect() {
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
-        var destination ='/topic/greetings';
+        var destination ='/topic/'+name;
         var managed=stompClient.subscribe(destination, function (greeting) {
             showGreeting(JSON.parse(greeting.body).content);
         });
