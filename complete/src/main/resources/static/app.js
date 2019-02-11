@@ -37,7 +37,7 @@ function disconnect() {
 
 function sendName() {
     var name=$("#name").val();
-    stompClient.send("/broker/"+name, {}, JSON.stringify({'message': $("#message").val()}));
+    stompClient.send("/stompbroker/"+name, {}, JSON.stringify({'message': $("#message").val()}));
 }
 
 function showGreeting(message) {
