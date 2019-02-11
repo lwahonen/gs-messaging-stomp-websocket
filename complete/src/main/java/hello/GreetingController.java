@@ -24,9 +24,9 @@ public class GreetingController {
 
     @MessageMapping("/{token}")
     @SendTo("/topic/{token}")
-    public Greeting greeting(@DestinationVariable String token, HelloMessage message) {
-        Logger.getLogger(getClass().getName()).log(Level.INFO, String.format("Writing %s to %s", message.getMessage(), token));
-        return new Greeting("Hello, " + HtmlUtils.htmlEscape(message.getMessage()) + "!");
+    public Greeting greeting(@DestinationVariable String token, String message) {
+        Logger.getLogger(getClass().getName()).log(Level.INFO, String.format("Writing %s to %s", message, token));
+        return new Greeting(message);
     }
 
     @RequestMapping(path="/broker/{token}")
