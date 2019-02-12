@@ -14,12 +14,12 @@ function setConnected(connected) {
 
 function connect() {
     var name=$("#name").val();
-    var socket = new SockJS('/broker/fallback');
+    var socket = new SockJS('/fallback');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
-        var destination ='/broker/topic/'+name;
+        var destination ='/topic/'+name;
         var managed=stompClient.subscribe(destination, function (greeting) {
             showGreeting(JSON.parse(greeting.body).content);
         });
