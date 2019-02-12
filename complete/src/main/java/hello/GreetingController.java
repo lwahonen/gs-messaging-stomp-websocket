@@ -22,14 +22,14 @@ public class GreetingController {
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
-    @MessageMapping("/{token}")
-    @SendTo("/topic/{token}")
+    @MessageMapping("/broker/{token}")
+    @SendTo("/broker/topic/{token}")
     public Greeting greeting(@DestinationVariable String token, String message) {
         Logger.getLogger(getClass().getName()).log(Level.INFO, String.format("Writing %s to %s", message, token));
         return new Greeting(message);
     }
 
-    @RequestMapping(path="/broker/{token}")
+    @RequestMapping(path="/broker/post/{token}")
     public String index(@PathVariable("token") String token, @RequestParam(value="message", required=false) String message) {
         simpMessagingTemplate.convertAndSend("/topic/"+token, new Greeting(message));
         return "Sending "+message+" to all listeners on "+token;
