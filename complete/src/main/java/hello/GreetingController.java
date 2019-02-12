@@ -29,7 +29,7 @@ public class GreetingController {
         return new Greeting(message);
     }
 
-    @RequestMapping(path="/broker/{token}")
+    @RequestMapping(path="/submit/{token}")
     public String index(@PathVariable("token") String token, @RequestParam(value="message", required=false) String message) {
         simpMessagingTemplate.convertAndSend("/topic/"+token, new Greeting(message));
         return "Sending "+message+" to all listeners on "+token;
