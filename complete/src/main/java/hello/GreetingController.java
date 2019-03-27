@@ -63,7 +63,7 @@ public class GreetingController {
         String message= URLDecoder.decode(payload, "UTF-8");
         message=message.substring("message=".length());
         mirror(message, token);
-        //        simpMessagingTemplate.convertAndSend("/topic/"+token, new Greeting(message));
+        simpMessagingTemplate.convertAndSend("/topic/"+token, new Greeting(message));
         return "Sending "+payload+" to all listeners on "+token;
     }
 
