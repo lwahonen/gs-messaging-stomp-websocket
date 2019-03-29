@@ -18,7 +18,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/fallback").setAllowedOrigins("*").withSockJS();
+        registry.addEndpoint("/fallback").setAllowedOrigins("*").withSockJS().setSessionCookieNeeded(false);
     }
 
 }
