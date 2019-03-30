@@ -27,7 +27,9 @@ function connect() {
 
     stompClient.webSocketFactory = function () {
         // Note that the URL is different from the WebSocket URL
-        return new SockJS("/fallback");
+        var uri=window.location.href;
+        uri += "/fallback";
+        return new SockJS(uri);
     };
 
     stompClient.onConnect = function (frame) {
