@@ -65,13 +65,13 @@ public class GreetingIntegrationTests {
                 session.subscribe("/topic/testi", new StompFrameHandler() {
                     @Override
                     public Type getPayloadType(StompHeaders headers) {
-                        return String.class;
+                        return byte[].class;
                     }
 
                     @Override
                     public void handleFrame(StompHeaders headers, Object payload) {
-                        String greeting = (String) payload;
-                        try {
+                         try {
+                            String greeting= greeting = new String((byte[]) payload, "UTF-8");
                             assertEquals("{\"Hello\":\"Spring\"}", greeting);
                         } catch (Throwable t) {
                             failure.set(t);
@@ -82,7 +82,7 @@ public class GreetingIntegrationTests {
                     }
                 });
                 try {
-                    session.send("/stompbroker/testi", "{\"Hello\":\"Spring\"}");
+                    session.send("/stompbroker/testi", "{\"Hello\":\"Spring\"}".getBytes("UTF-8"));
                 } catch (Throwable t) {
                     failure.set(t);
                     latch.countDown();
@@ -100,7 +100,7 @@ public class GreetingIntegrationTests {
         WebSocketStompClient stompClient = new WebSocketStompClient(sockJsClient);
         stompClient.setMessageConverter(new SimpleMessageConverter());
 
-        ListenableFuture<StompSession> connection=stompClient.connect("http://localhost:8080/fallback", handler);
+        ListenableFuture<StompSession> connection=stompClient.connect("http://localhost:"+this.port+"/fallback", handler);
         //this.stompClient.connect("ws://localhost:{port}/fallback", this.headers, handler, this.port);
 
         if (latch.await(30, TimeUnit.SECONDS)) {

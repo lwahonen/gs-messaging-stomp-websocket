@@ -11,7 +11,9 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -46,15 +50,32 @@ import java.util.logging.Logger;
 @RestController
 @SpringBootApplication
 public class GreetingController {
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedMethods("*")
+                        .allowedOrigins("*");
+            }
+        };
+    }
+    public static void main(String[] args) {
+        SpringApplication.run(GreetingController.class, args);
+    }
+
+
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
     @MessageMapping("/{token}")
     @SendTo("/topic/{token}")
-    public Greeting greeting(@DestinationVariable String token, String message) {
+    public String greeting(@DestinationVariable String token, String message) {
         Logger.getLogger(getClass().getName()).log(Level.INFO, String.format("Writing %s to %s", message, token));
         mirror(message, token);
-        return new Greeting(message);
+        return message;
     }
 
     @RequestMapping(path="/broker/{token}")
@@ -62,7 +83,7 @@ public class GreetingController {
         String message= URLDecoder.decode(payload, "UTF-8");
         message=message.substring("message=".length());
         mirror(message, token);
-        simpMessagingTemplate.convertAndSend("/topic/"+token, new Greeting(message));
+        simpMessagingTemplate.convertAndSend("/topic/"+token, message);
         return "Sending "+payload+" to all listeners on "+token;
     }
 
@@ -150,6 +171,8 @@ public class GreetingController {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "UNABLE TO READ HOSTS CONFIGURATION FILE FROM " + s);
             return;
         }
+        Logger.getLogger(getClass().getName()).log(Level.INFO, "Parsing config file " + s);
+
         String content = FileUtils.readFileToString(f, Charset.forName("UTF-8"));
         List<Broker> others = new ArrayList<>();
         String myuser = parseBrokerSettings(content, others);
